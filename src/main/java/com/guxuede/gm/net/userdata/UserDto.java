@@ -5,6 +5,7 @@ public class UserDto {
     private int id;
     private String character;
     private int x,y;
+    private int direction;
 
     public String getUserName() {
         return userName;
@@ -44,5 +45,13 @@ public class UserDto {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
     }
 }

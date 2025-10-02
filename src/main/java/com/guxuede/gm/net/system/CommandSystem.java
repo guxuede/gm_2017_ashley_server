@@ -110,8 +110,8 @@ public class CommandSystem extends EntitySystem {
 
         @Override
         public void run() {
-            PlayerLandingPack playerLandingPack = new PlayerLandingPack(id, x, y, character);
-            engine.getSystem(MessageOutboundSystem.class).broadCaseMessage(playerLandingPack);
+//            PlayerLandingPack playerLandingPack = new PlayerLandingPack(id, x, y, character);
+//            engine.getSystem(MessageOutboundSystem.class).broadCaseMessage(playerLandingPack);
         }
     }
 }
