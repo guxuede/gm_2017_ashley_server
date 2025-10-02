@@ -1,8 +1,8 @@
 package com.guxuede.gm.net.system;
 
+import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.EntitySystem;
 import com.guxuede.gm.net.client.registry.pack.PlayerLandingPack;
-import com.guxuede.gm.net.server.GameWorld;
 import org.apache.commons.lang3.StringUtils;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -11,14 +11,16 @@ import org.jline.terminal.TerminalBuilder;
 import picocli.CommandLine;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class CommandSystem extends EntitySystem {
 
-    private static GameWorld gameWorld;
+    private static Engine engine;
     private LineReader reader;
 
-    public CommandSystem(GameWorld gameWorld) {
-        this.gameWorld = gameWorld;
+    public CommandSystem(Engine engine) {
+        this.engine = engine;
+
         Terminal terminal = null;
         try {
             terminal = TerminalBuilder.builder()
@@ -30,6 +32,9 @@ public class CommandSystem extends EntitySystem {
         // Create line reader
         reader = LineReaderBuilder.builder()
                 .terminal(terminal)
+                .variable(LineReader.HISTORY_FILE, Paths.get("history.txt"))
+                .variable(LineReader.HISTORY_SIZE, 1000) // Maximum entries in memory
+                .variable(LineReader.HISTORY_FILE_SIZE, 2000) // Maximum entries in file
                 .build();
 
         new Thread(new Runnable() {
@@ -106,7 +111,7 @@ public class CommandSystem extends EntitySystem {
         @Override
         public void run() {
             PlayerLandingPack playerLandingPack = new PlayerLandingPack(id, x, y, character);
-            gameWorld.broadCaseMessage(playerLandingPack);
+            engine.getSystem(MessageOutboundSystem.class).broadCaseMessage(playerLandingPack);
         }
     }
 }

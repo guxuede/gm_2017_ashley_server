@@ -3,7 +3,6 @@ package entityEdit;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.ashley.core.Entity;
 import com.guxuede.gm.net.system.component.ChannelComponent;
-import com.guxuede.gm.net.system.component.NetClientComponent;
 import io.netty.channel.Channel;
 
 import java.util.function.Consumer;
@@ -47,17 +46,19 @@ public abstract class EntityEditor<T extends EntityEditor>{
     /**
      * Add artemis managed components to entity.
      */
-    public final T with(Class<? extends Component> component) {
-        edit.create(component);
+    public final <V  extends Component> T with(Class<V> component) {
+        V c = edit.create(component);
+        entity.add(c);
         return (T) this;
     }
 
     /**
      * Add artemis managed components to entity.
      */
-    public final T withConfig(Class<? extends Component> component, Consumer<T> consumer) {
-        Component component1 = edit.create(component);
-        consumer.accept((T) component1);
+    public final <V  extends Component> T with(Class<V> component, Consumer<V> consumer) {
+        V c = edit.create(component);
+        consumer.accept(c);
+        entity.add(c);
         return (T) this;
     }
 
@@ -66,8 +67,6 @@ public abstract class EntityEditor<T extends EntityEditor>{
         ChannelComponent channelComponent = edit.create(ChannelComponent.class);
         channelComponent.channel = channel;
         entity.add(channelComponent);
-        NetClientComponent netClientComponent = edit.create(NetClientComponent.class);
-        entity.add(netClientComponent);
         return (T) this;
     }
 }

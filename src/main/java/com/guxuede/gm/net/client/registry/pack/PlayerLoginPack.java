@@ -3,9 +3,14 @@ package com.guxuede.gm.net.client.registry.pack;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.guxuede.gm.net.client.registry.NetPack;
+import com.guxuede.gm.net.system.MessageOutboundSystem;
+import com.guxuede.gm.net.system.component.PlayerDataComponent;
+import com.guxuede.gm.net.system.component.PositionComponent;
+import com.guxuede.gm.net.userdata.UserDto;
+import com.guxuede.gm.net.userdata.UserManager;
 import com.guxuede.gm.net.utils.PackageUtils;
+import entityEdit.E;
 import io.netty.buffer.ByteBuf;
-import org.apache.commons.lang3.StringUtils;
 
 
 public class PlayerLoginPack extends NetPack {
@@ -30,9 +35,17 @@ public class PlayerLoginPack extends NetPack {
 
     @Override
     public void action(Engine engine, Entity entity) {
-        if(StringUtils.equals(this.userName, "greg") && StringUtils.equals(this.password, "123")){
-
-        }
+        UserDto userDto = UserManager.loadUser(this.userName);
+        E.edit(entity).with(PlayerDataComponent.class, e->{
+            e.setCharacter(userDto.getCharacter());
+            e.setId(userDto.getId());
+            e.userName = userName;
+            e.direction = 1;
+        }).with(PositionComponent.class, e->{
+            e.position.set(userDto.getX(), userDto.getY());
+        });
+        PlayerLandingPack pack = new PlayerLandingPack(userDto.getId(), userDto.getX(),userDto.getY(),userDto.getCharacter());
+        engine.getSystem(MessageOutboundSystem.class).broadCaseMessage(pack);
     }
 
     public String getUserName() {

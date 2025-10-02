@@ -19,7 +19,8 @@ import com.badlogic.ashley.core.Entity;
 import com.guxuede.gm.net.client.registry.NetPack;
 import com.guxuede.gm.net.client.registry.pack.PlayerDisconnectedPack;
 import com.guxuede.gm.net.system.component.ChannelComponent;
-import com.guxuede.gm.net.system.component.NetClientComponent;
+import com.guxuede.gm.net.system.component.PlayerDataComponent;
+import com.guxuede.gm.net.system.component.MessageComponent;
 import entityEdit.E;
 import entityEdit.Mappers;
 import io.netty.channel.Channel;
@@ -40,16 +41,19 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
 
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws UnknownHostException {
-        System.out.println("链接进入");
+        System.out.println("channelActive");
         Channel channel = ctx.channel();
-        Entity entity = E.create().connectedToServer(channel).buildToWorld();
+        Entity entity = E.create().with(ChannelComponent.class, e->{
+            e.channel = channel;
+        }).with(MessageComponent.class).buildToWorld();
         channel.attr(GAME_ENTITY).set(entity);
     }
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, NetPack msg) throws Exception {
+        System.out.println("received message:"  + msg);
         Entity entity = ctx.attr(GAME_ENTITY).get();
-        entity.getComponent(NetClientComponent.class).inBoundPack(msg);
+        entity.getComponent(MessageComponent.class).inBoundPack(msg);
     }
 
     @Override
@@ -57,19 +61,23 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
         super.channelInactive(ctx);
         System.out.println("channelInactive = [" + ctx + "]");
         Entity entity = ctx.attr(GAME_ENTITY).get();
-        ChannelComponent channelComponent = Mappers.channelCM.get(entity);
-        channelComponent.reset();
-        entity.remove(ChannelComponent.class);
-        NetClientComponent netClientComponent = Mappers.netPackCM.get(entity);
-        PlayerDisconnectedPack playerDisconnectedPack = new PlayerDisconnectedPack(netClientComponent.getId());
-        netClientComponent.inBoundPack(playerDisconnectedPack);
         ctx.attr(GAME_ENTITY).set(null);
+        entity.remove(ChannelComponent.class);
+
+        PlayerDataComponent playerDataComponent = Mappers.playerCM.get(entity);
+        if(playerDataComponent !=null){
+            MessageComponent messageComponent = Mappers.messageCM.get(entity);
+            PlayerDisconnectedPack playerDisconnectedPack = new PlayerDisconnectedPack(playerDataComponent.getId());
+            messageComponent.inBoundPack(playerDisconnectedPack);
+        }
     }
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
         System.out.println("handlerRemoved = [" + ctx + "]");
+        ctx.attr(GAME_ENTITY).set(null);
     }
+
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {

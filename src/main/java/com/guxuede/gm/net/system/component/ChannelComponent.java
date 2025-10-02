@@ -4,7 +4,6 @@ import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.utils.Pool;
 import io.netty.channel.Channel;
 
-
 public class ChannelComponent implements Component, Pool.Poolable{
 
     public Channel channel;
