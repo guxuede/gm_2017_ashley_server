@@ -2,24 +2,18 @@ package com.guxuede.gm.net.client.registry.pack;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.ashley.core.Family;
 import com.guxuede.gm.net.client.registry.NetPack;
-import com.guxuede.gm.net.system.MessageOutboundSystem;
-import com.guxuede.gm.net.system.component.ChannelComponent;
-import com.guxuede.gm.net.system.component.PlayerDataComponent;
-import com.guxuede.gm.net.system.component.PositionComponent;
 import com.guxuede.gm.net.utils.PackageUtils;
-import entityEdit.Mappers;
 import io.netty.buffer.ByteBuf;
 
-public class PlayerLandingPack extends NetPack {
+public class ActorLandingPack extends NetPack {
     private String userName;
     private String character;
     private int id;
-    private int x, y;
+    private float x, y;
     private int direction;
 
-    public PlayerLandingPack(String userName, String character, int id, int x, int y, int direction) {
+    public ActorLandingPack(String userName, String character, int id, float x, float y, int direction) {
         this.userName = userName;
         this.character = character;
         this.id = id;
@@ -28,13 +22,13 @@ public class PlayerLandingPack extends NetPack {
         this.direction = direction;
     }
 
-    public PlayerLandingPack(ByteBuf data) {
+    public ActorLandingPack(ByteBuf data) {
         super(data);
         this.id = data.readInt();
         this.userName = PackageUtils.readString(data);
         this.character = PackageUtils.readString(data);
-        this.x = data.readInt();
-        this.y = data.readInt();
+        this.x = data.readFloat();
+        this.y = data.readFloat();
         this.direction = data.readInt();
     }
 
@@ -43,8 +37,8 @@ public class PlayerLandingPack extends NetPack {
         data.writeInt(this.id);
         PackageUtils.writeString(userName, data);
         PackageUtils.writeString(character, data);
-        data.writeInt(this.x);
-        data.writeInt(this.y);
+        data.writeFloat(this.x);
+        data.writeFloat(this.y);
         data.writeInt(this.direction);
     }
 

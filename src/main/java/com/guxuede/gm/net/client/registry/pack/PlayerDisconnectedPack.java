@@ -5,7 +5,6 @@ import com.badlogic.ashley.core.Entity;
 import com.guxuede.gm.net.client.registry.NetPack;
 import com.guxuede.gm.net.system.MessageOutboundSystem;
 import com.guxuede.gm.net.system.component.PlayerDataComponent;
-import com.guxuede.gm.net.system.component.PositionComponent;
 import com.guxuede.gm.net.userdata.UserDto;
 import com.guxuede.gm.net.userdata.UserManager;
 import entityEdit.Mappers;
@@ -31,11 +30,10 @@ public class PlayerDisconnectedPack extends NetPack {
     @Override
     public void action(Engine engine, Entity entity) {
         PlayerDataComponent playerDataComponent = Mappers.playerCM.get(entity);
-        PositionComponent positionComponent = Mappers.positionCM.get(entity);
         UserDto userDto = UserManager.loadUser(playerDataComponent.userName);
         userDto.setCharacter(playerDataComponent.getCharacter());
-        userDto.setX((int) positionComponent.position.x);
-        userDto.setY((int) positionComponent.position.y);
+        userDto.setX(playerDataComponent.position.x);
+        userDto.setY(playerDataComponent.position.y);
 
         engine.removeEntity(entity);
 

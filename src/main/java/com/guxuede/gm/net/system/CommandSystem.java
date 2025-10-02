@@ -2,7 +2,6 @@ package com.guxuede.gm.net.system;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.EntitySystem;
-import com.guxuede.gm.net.client.registry.pack.PlayerLandingPack;
 import org.apache.commons.lang3.StringUtils;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;

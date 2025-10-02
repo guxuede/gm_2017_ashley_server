@@ -9,22 +9,22 @@ import com.guxuede.gm.net.system.component.PlayerDataComponent;
 import entityEdit.Mappers;
 import io.netty.buffer.ByteBuf;
 
-public class PlayerMovePack extends NetPack {
+public class ActorMovePack extends NetPack {
 
     private int id;
     private Vector2 acceleration = new Vector2();
 
-    public PlayerMovePack(int id, Vector2 acceleration, Vector2 position) {
+    public ActorMovePack(int id, Vector2 acceleration, Vector2 position) {
         this.id = id;
         this.acceleration.set(acceleration);
     }
 
-    public PlayerMovePack(int id, Vector2 acceleration) {
+    public ActorMovePack(int id, Vector2 acceleration) {
         this.id = id;
         this.acceleration.set(acceleration);
     }
 
-    public PlayerMovePack(ByteBuf data) {
+    public ActorMovePack(ByteBuf data) {
         id = data.readInt();
         acceleration.set(data.readFloat(), data.readFloat());
     }
