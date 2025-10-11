@@ -43,8 +43,7 @@ public class CommandSystem extends EntitySystem {
                     String line = reader.readLine("JLine > ");
                     if(StringUtils.isNoneBlank(line)){
                         try {
-                            CommandLine commandLine = new CommandLine(new GameCommand());
-                            commandLine.execute(line.split(" "));
+                            executeCommand(line);
                         }catch (RuntimeException e){
                             e.printStackTrace();
                         }
@@ -54,6 +53,11 @@ public class CommandSystem extends EntitySystem {
                 }
             }
         }).start();
+    }
+
+    public void executeCommand(String line) {
+        CommandLine commandLine = new CommandLine(new GameCommand());
+        commandLine.execute(line.split(" "));
     }
 
 
