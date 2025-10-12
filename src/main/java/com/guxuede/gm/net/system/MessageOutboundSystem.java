@@ -6,8 +6,10 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.guxuede.gm.net.client.registry.NetPack;
 import com.guxuede.gm.net.system.component.ChannelComponent;
 import com.guxuede.gm.net.system.component.MessageComponent;
+import com.guxuede.gm.net.system.component.PlayerDataComponent;
 import entityEdit.Mappers;
 import io.netty.channel.Channel;
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -16,6 +18,8 @@ import io.netty.channel.Channel;
 public class MessageOutboundSystem extends IteratingSystem {
 
     private static final Family family = Family.all(MessageComponent.class, ChannelComponent.class).get();
+
+    private static final Family playerFamily = Family.all(MessageComponent.class, ChannelComponent.class, PlayerDataComponent.class).get();
 
     public MessageOutboundSystem(){
         super(family);
@@ -49,5 +53,22 @@ public class MessageOutboundSystem extends IteratingSystem {
         });
     }
 
+    public void broadCaseMessageInSameMapExcept(NetPack netPack, Entity except, String mapName){
+        getEngine().getEntities().forEach(e->{
+            PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
+            if(p1!=null && e!=except && StringUtils.equals(p1.mapName, mapName)){
+                e.getComponent(MessageComponent.class).outboundPack(netPack);
+            }
+        });
+    }
+
+    public void broadCaseMessageInSameMap(NetPack netPack, String mapName){
+        getEngine().getEntities().forEach(e->{
+            PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
+            if(p1!=null && StringUtils.equals(p1.mapName, mapName)){
+                e.getComponent(MessageComponent.class).outboundPack(netPack);
+            }
+        });
+    }
 
 }

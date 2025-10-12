@@ -23,8 +23,7 @@ public class ActorPositionPack extends NetPack {
         this.position.set(position);
     }
 
-    //[ 0, 0, 0, 3, -96, -8, 32, 12, 0, 0, 0, 4, 68, 37, 91, 50, 67, -111, 6, 9, 9, 9, 9, 9 ]
-    public ActorPositionPack(ByteBuf data) {  // 谁保证一定跟写的一样?
+    public ActorPositionPack(ByteBuf data) {
         id = data.readInt();
         direction = data.readInt();
         float x = data.readFloat();
@@ -36,7 +35,7 @@ public class ActorPositionPack extends NetPack {
     public void write(ByteBuf data) {
         data.writeInt(id);
         data.writeInt(direction);
-        data.writeFloat(position.x); // 谁保证一定跟写的一样?
+        data.writeFloat(position.x);
         data.writeFloat(position.y);
     }
 
@@ -46,6 +45,6 @@ public class ActorPositionPack extends NetPack {
         playerDataComponent.position.set(position.x, position.y);
         playerDataComponent.direction = direction;
 
-        engine.getSystem(MessageOutboundSystem.class).broadCaseMessageExcept(this, entity);
+        engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMapExcept(this, entity, playerDataComponent.mapName);
     }
 }

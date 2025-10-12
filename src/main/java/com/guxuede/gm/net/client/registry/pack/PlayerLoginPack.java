@@ -12,6 +12,7 @@ import com.guxuede.gm.net.userdata.UserManager;
 import com.guxuede.gm.net.utils.PackageUtils;
 import entityEdit.E;
 import io.netty.buffer.ByteBuf;
+import org.apache.commons.lang3.StringUtils;
 
 
 public class PlayerLoginPack extends NetPack {
@@ -38,25 +39,28 @@ public class PlayerLoginPack extends NetPack {
     public void action(Engine engine, Entity entity) {
         UserDto userDto = UserManager.loadUser(this.userName);
 
-        //send all existing player
+        //send all existing player to player
         engine.getEntitiesFor(Family.all(PlayerDataComponent.class).get()).forEach(e->{
             PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
-            ActorLandingPack p = new ActorLandingPack(p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.direction);
-            entity.getComponent(MessageComponent.class).outboundPack(p);
+            if(StringUtils.equals(p1.mapName, userDto.getMapName())){
+                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.direction);
+                entity.getComponent(MessageComponent.class).outboundPack(p);
+            }
         });
 
         //landing current play to others
         E.edit(entity).with(PlayerDataComponent.class, e->{
             e.setCharacter(userDto.getCharacter());
             e.setId(userDto.getId());
+            e.mapName = userDto.getMapName();
             e.userName = userName;
             e.direction = 1;
             e.position.set(userDto.getX(), userDto.getY());
         });
 
-        ActorLandingPack pack = new ActorLandingPack(userDto.getUserName(),userDto.getCharacter(), userDto.getId(), userDto.getX(),userDto.getY(),userDto.getDirection());
-        engine.getSystem(MessageOutboundSystem.class).broadCaseMessage(pack);
-
+        //send current player to others(include )
+        ActorLandingPack pack = new ActorLandingPack(userDto.getMapName(), userDto.getUserName(),userDto.getCharacter(), userDto.getId(), userDto.getX(),userDto.getY(),userDto.getDirection());
+        engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMap(pack, userDto.getMapName());
     }
 
     public String getUserName() {

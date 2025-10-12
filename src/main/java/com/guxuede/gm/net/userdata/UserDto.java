@@ -1,11 +1,20 @@
 package com.guxuede.gm.net.userdata;
 
 public class UserDto {
+    private String mapName;
     private String userName;
     private int id;
     private String character;
     private float x,y;
     private int direction;
+
+    public String getMapName() {
+        return mapName;
+    }
+
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
+    }
 
     public String getUserName() {
         return userName;

@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Pool;
 public class PlayerDataComponent implements Component, Pool.Poolable{
     public static final int STOP=0, DOWN=1,LEFT=2,RIGHT=3,UP=4;
 
+    public String mapName;
     public String userName;
 
     public int id;

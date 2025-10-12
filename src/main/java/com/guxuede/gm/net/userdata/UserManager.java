@@ -1,34 +1,56 @@
 package com.guxuede.gm.net.userdata;
 
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.ObjectMap;
+import org.apache.commons.io.IOUtils;
+
+import java.io.*;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 public class UserManager {
+    private static File userFile = new File("C:\\Users\\latiao\\user.json");
 
-    private static final ConcurrentHashMap<String, UserDto> user = new ConcurrentHashMap<>();
+    private static final ObjectMap<String, UserDto> user = new ObjectMap<>();
+    static{
+        try{
+            Json json = new Json();
+            BufferedReader reader = IOUtils.buffer(new BufferedReader(new InputStreamReader(new FileInputStream(userFile))));
+            user.putAll(json.fromJson(user.getClass(), reader));
+        }catch (RuntimeException e){
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static final String[] RANDOM_CHARACTER = new String[]{"RPGMarkPig", "Aquatic","Undead"};
 
     private static final Random random = new Random();
 
     public static UserDto loadUser(String userName){
-       return user.computeIfAbsent(userName, new Function<String, UserDto>() {
-            @Override
-            public UserDto apply(String s) {
-                UserDto userDto = new UserDto();
-                userDto.setId((int) System.currentTimeMillis());
-                userDto.setUserName(userName);
-                userDto.setX(100);
-                userDto.setY(100);
-                userDto.setCharacter(RANDOM_CHARACTER[random.nextInt(0, 3)]);
-                return userDto;
-            }
-        });
+        if(user.containsKey(userName)){
+            return user.get(userName);
+        }else{
+            UserDto userDto = new UserDto();
+            userDto.setId((int) System.currentTimeMillis());
+            userDto.setUserName(userName);
+            userDto.setX(100);
+            userDto.setY(100);
+            userDto.setMapName("data/desert1.tmx");
+            userDto.setCharacter(RANDOM_CHARACTER[random.nextInt(0, 3)]);
+            user.put(userName, userDto);
+            return userDto;
+        }
     }
 
 
-    public void save(){
-
+    public static void save(){
+        Json json = new Json();
+        try {
+            BufferedWriter buffer = IOUtils.buffer(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(userFile))));
+            json.toJson(user, buffer);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
