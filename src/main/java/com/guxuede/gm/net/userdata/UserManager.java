@@ -2,6 +2,7 @@ package com.guxuede.gm.net.userdata;
 
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.ObjectMap;
+import com.guxuede.gm.net.system.component.PlayerDataComponent;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
@@ -10,7 +11,7 @@ import java.util.Random;
 public class UserManager {
     private static File userFile = new File("C:\\Users\\latiao\\user.json");
 
-    private static final ObjectMap<String, UserDto> user = new ObjectMap<>();
+    private static final ObjectMap<String, UserDto> user = new ObjectMap<String, UserDto>();
     static{
         try{
             Json json = new Json();
@@ -52,5 +53,15 @@ public class UserManager {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void updateUser(PlayerDataComponent component) {
+        UserDto userDto = user.get(component.userName);
+        userDto.setId(component.getId());
+        userDto.setCharacter(component.getCharacter());
+        userDto.setMapName(component.mapName);
+        userDto.setX(component.position.x);
+        userDto.setY(component.position.y);
+        userDto.setDirection(component.direction);
     }
 }

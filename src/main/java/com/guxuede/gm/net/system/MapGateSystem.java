@@ -26,6 +26,9 @@ public class MapGateSystem  extends IteratingSystem {
             if(playerDataComponent.position.dst(787f,451f) <  20){
                 actorMapChange(entity, playerDataComponent,  "data/map2.tmx", 110, 83);
             }
+            if(playerDataComponent.position.dst(883f,216f) <  20){
+                actorMapChange(entity, playerDataComponent,  "data/map1.tmx", 110, 83);
+            }
         }
         if(StringUtils.equals("data/map2.tmx", playerDataComponent.mapName)){
             if(playerDataComponent.position.dst(110f,50f) <  20){
