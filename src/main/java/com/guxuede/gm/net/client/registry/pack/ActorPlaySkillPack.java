@@ -49,6 +49,7 @@ public class ActorPlaySkillPack extends NetPack {
     public void action(Engine engine, Entity entity) {
         PlayerDataComponent playerDataComponent = Mappers.playerCM.get(entity);
         engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMap(this, playerDataComponent.mapName);
+
     }
 
 }

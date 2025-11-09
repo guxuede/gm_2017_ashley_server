@@ -24,7 +24,17 @@ public class UserManager {
         }
     }
 
-    private static final String[] RANDOM_CHARACTER = new String[]{"RPGMarkPig", "Aquatic","Undead"};
+    private static final String[] RANDOM_CHARACTER = new String[]{
+            "Undead",
+            "Aquatic",
+            "Farmer",
+            "RPGMarkMen",
+            "RPGMarkGreg",
+            "LpcActor1",
+            "LpcActor2",
+            "LpcActor3",
+            "LpcActor4"
+    };
 
     private static final Random random = new Random();
 
@@ -38,7 +48,7 @@ public class UserManager {
             userDto.setX(100);
             userDto.setY(100);
             userDto.setMapName("data/desert1.tmx");
-            userDto.setCharacter(RANDOM_CHARACTER[random.nextInt(0, 3)]);
+            userDto.setCharacter(RANDOM_CHARACTER[random.nextInt(0, RANDOM_CHARACTER.length)]);
             user.put(userName, userDto);
             return userDto;
         }
