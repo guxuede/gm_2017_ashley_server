@@ -48,14 +48,14 @@ public class MapGateSystem  extends IteratingSystem {
         getEngine().getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMapExcept(actorUnLandingPack, entity, originalMap);
 
         //notify other player(include current player) in new map: landing player
-        ActorLandingPack pack = new ActorLandingPack(playerDataComponent.mapName, playerDataComponent.userName,playerDataComponent.getCharacter(), playerDataComponent.id, playerDataComponent.position.x,playerDataComponent.position.y,playerDataComponent.direction);
+        ActorLandingPack pack = new ActorLandingPack(playerDataComponent.mapName, playerDataComponent.userName,playerDataComponent.getCharacter(), playerDataComponent.id, playerDataComponent.position.x,playerDataComponent.position.y,playerDataComponent.directionInDegrees);
         getEngine().getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMap(pack, playerDataComponent.mapName);
 
         //send existing player in new map to current player
         getEngine().getEntitiesFor(Family.all(PlayerDataComponent.class).get()).forEach(e->{
             PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
             if(p1.id!=playerDataComponent.id && StringUtils.equals(p1.mapName, playerDataComponent.mapName)){
-                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.direction);
+                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees);
                 entity.getComponent(MessageComponent.class).outboundPack(p);
             }
         });

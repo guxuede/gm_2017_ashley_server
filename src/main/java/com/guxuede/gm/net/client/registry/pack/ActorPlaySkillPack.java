@@ -2,7 +2,6 @@ package com.guxuede.gm.net.client.registry.pack;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.math.Vector2;
 
 import com.guxuede.gm.net.client.registry.NetPack;
 import com.guxuede.gm.net.system.MessageOutboundSystem;
@@ -10,10 +9,6 @@ import com.guxuede.gm.net.system.component.PlayerDataComponent;
 import com.guxuede.gm.net.utils.PackageUtils;
 import entityEdit.Mappers;
 import io.netty.buffer.ByteBuf;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
 
 public class ActorPlaySkillPack extends NetPack {
     private int id;

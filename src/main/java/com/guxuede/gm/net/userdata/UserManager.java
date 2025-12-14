@@ -26,7 +26,6 @@ public class UserManager {
 
     private static final String[] RANDOM_CHARACTER = new String[]{
             "Undead",
-            "Aquatic",
             "Farmer",
             "RPGMarkMen",
             "RPGMarkGreg",
@@ -72,6 +71,6 @@ public class UserManager {
         userDto.setMapName(component.mapName);
         userDto.setX(component.position.x);
         userDto.setY(component.position.y);
-        userDto.setDirection(component.direction);
+        userDto.setDirectionInDegrees(component.directionInDegrees);
     }
 }

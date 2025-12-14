@@ -6,7 +6,7 @@ public class UserDto {
     private int id;
     private String character;
     private float x,y;
-    private int direction;
+    private float directionInDegrees;
 
     public String getMapName() {
         return mapName;
@@ -56,11 +56,11 @@ public class UserDto {
         this.y = y;
     }
 
-    public int getDirection() {
-        return direction;
+    public float getDirectionInDegrees() {
+        return directionInDegrees;
     }
 
-    public void setDirection(int direction) {
-        this.direction = direction;
+    public void setDirectionInDegrees(float directionInDegrees) {
+        this.directionInDegrees = directionInDegrees;
     }
 }

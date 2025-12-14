@@ -43,7 +43,7 @@ public class PlayerLoginPack extends NetPack {
         engine.getEntitiesFor(Family.all(PlayerDataComponent.class).get()).forEach(e->{
             PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
             if(StringUtils.equals(p1.mapName, userDto.getMapName())){
-                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.direction);
+                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees);
                 entity.getComponent(MessageComponent.class).outboundPack(p);
             }
         });
@@ -54,12 +54,12 @@ public class PlayerLoginPack extends NetPack {
             e.setId(userDto.getId());
             e.mapName = userDto.getMapName();
             e.userName = userName;
-            e.direction = 1;
+            e.directionInDegrees = 1;
             e.position.set(userDto.getX(), userDto.getY());
         });
 
         //send current player to others(include )
-        ActorLandingPack pack = new ActorLandingPack(userDto.getMapName(), userDto.getUserName(),userDto.getCharacter(), userDto.getId(), userDto.getX(),userDto.getY(),userDto.getDirection());
+        ActorLandingPack pack = new ActorLandingPack(userDto.getMapName(), userDto.getUserName(),userDto.getCharacter(), userDto.getId(), userDto.getX(),userDto.getY(),userDto.getDirectionInDegrees());
         engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMap(pack, userDto.getMapName());
     }
 
