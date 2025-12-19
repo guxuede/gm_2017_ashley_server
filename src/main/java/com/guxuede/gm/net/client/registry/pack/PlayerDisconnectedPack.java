@@ -39,4 +39,10 @@ public class PlayerDisconnectedPack extends NetPack {
 
         engine.getSystem(MessageOutboundSystem.class).broadCaseMessage(this);
     }
+
+
+    @Override
+    public int getId() {
+        return id;
+    }
 }

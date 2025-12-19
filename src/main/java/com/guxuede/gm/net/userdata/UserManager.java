@@ -25,10 +25,6 @@ public class UserManager {
     }
 
     private static final String[] RANDOM_CHARACTER = new String[]{
-            "Undead",
-            "Farmer",
-            "RPGMarkMen",
-            "RPGMarkGreg",
             "LpcActor1",
             "LpcActor2",
             "LpcActor3",

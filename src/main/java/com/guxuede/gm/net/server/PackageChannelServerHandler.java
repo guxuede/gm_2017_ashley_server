@@ -45,7 +45,7 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
         Channel channel = ctx.channel();
         Entity entity = E.create().with(ChannelComponent.class, e->{
             e.channel = channel;
-        }).with(MessageComponent.class).buildToWorld();
+        }).buildToWorld();
         channel.attr(GAME_ENTITY).set(entity);
     }
 
@@ -53,7 +53,7 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
     public void channelRead0(ChannelHandlerContext ctx, NetPack msg) throws Exception {
         System.out.println("received message:"  + msg);
         Entity entity = ctx.attr(GAME_ENTITY).get();
-        entity.getComponent(MessageComponent.class).inBoundPack(msg);
+        Mappers.channelCM.get(entity).inBoundPack(msg);
     }
 
     @Override
@@ -62,13 +62,11 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
         System.out.println("channelInactive = [" + ctx + "]");
         Entity entity = ctx.attr(GAME_ENTITY).get();
         ctx.attr(GAME_ENTITY).set(null);
-        entity.remove(ChannelComponent.class);
 
-        PlayerDataComponent playerDataComponent = Mappers.playerCM.get(entity);
-        if(playerDataComponent !=null){
-            MessageComponent messageComponent = Mappers.messageCM.get(entity);
-            PlayerDisconnectedPack playerDisconnectedPack = new PlayerDisconnectedPack(playerDataComponent.getId());
-            messageComponent.inBoundPack(playerDisconnectedPack);
+        ChannelComponent channelComponent = Mappers.channelCM.get(entity);
+        Channel channel = channelComponent.channel;
+        if(channel.isOpen()){
+            channel.close();
         }
     }
 

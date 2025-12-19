@@ -9,12 +9,13 @@ import io.netty.buffer.ByteBuf;
 public class ActorLandingPack extends NetPack {
     private String mapName;
     private String userName;
-    private String character;
     private int id;
     private float x, y;
+    private String character;
     private float directionInDegrees;
+    private String client;
 
-    public ActorLandingPack(String mapName, String userName, String character, int id, float x, float y, float directionInDegrees) {
+    public ActorLandingPack(String mapName, String userName, String character, int id, float x, float y, float directionInDegrees, String client) {
         this.mapName = mapName;
         this.userName = userName;
         this.character = character;
@@ -22,6 +23,7 @@ public class ActorLandingPack extends NetPack {
         this.x = x;
         this.y = y;
         this.directionInDegrees = directionInDegrees;
+        this.client = client;
     }
 
     public ActorLandingPack(ByteBuf data) {
@@ -33,7 +35,9 @@ public class ActorLandingPack extends NetPack {
         this.x = data.readFloat();
         this.y = data.readFloat();
         this.directionInDegrees = data.readFloat();
+        this.client = PackageUtils.readString(data);
     }
+
 
     @Override
     public void write(ByteBuf data) {
@@ -44,8 +48,13 @@ public class ActorLandingPack extends NetPack {
         data.writeFloat(this.x);
         data.writeFloat(this.y);
         data.writeFloat(this.directionInDegrees);
+        PackageUtils.writeString(client, data);
     }
 
+    @Override
+    public int getId() {
+        return this.id;
+    }
 
     @Override
     public void action(Engine engine, Entity entity) {

@@ -33,4 +33,10 @@ public class PlayerCommandPack extends NetPack {
     public void action(Engine engine, Entity entity) {
         engine.getSystem(CommandSystem.class).executeCommand(command);
     }
+
+
+    @Override
+    public int getId() {
+        return id;
+    }
 }

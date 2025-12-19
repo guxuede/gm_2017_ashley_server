@@ -53,4 +53,10 @@ public class ActorPositionPack extends NetPack {
 
         engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMapExcept(this, entity, playerDataComponent.mapName);
     }
+
+
+    @Override
+    public int getId() {
+        return id;
+    }
 }

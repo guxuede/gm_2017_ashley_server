@@ -47,4 +47,8 @@ public class ActorPlaySkillPack extends NetPack {
 
     }
 
+    @Override
+    public int getId() {
+        return id;
+    }
 }

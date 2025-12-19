@@ -55,4 +55,8 @@ public class ActorPlayAnimationPack extends NetPack{
         engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMap(this, playerDataComponent.mapName);
     }
 
+    @Override
+    public int getId() {
+        return id;
+    }
 }

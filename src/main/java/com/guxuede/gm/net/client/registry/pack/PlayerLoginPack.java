@@ -5,12 +5,14 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.guxuede.gm.net.client.registry.NetPack;
 import com.guxuede.gm.net.system.MessageOutboundSystem;
+import com.guxuede.gm.net.system.component.ChannelComponent;
 import com.guxuede.gm.net.system.component.MessageComponent;
 import com.guxuede.gm.net.system.component.PlayerDataComponent;
 import com.guxuede.gm.net.userdata.UserDto;
 import com.guxuede.gm.net.userdata.UserManager;
 import com.guxuede.gm.net.utils.PackageUtils;
 import entityEdit.E;
+import entityEdit.Mappers;
 import io.netty.buffer.ByteBuf;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 public class PlayerLoginPack extends NetPack {
     private String userName;
     private String password;
+    private String client;
 
     public PlayerLoginPack() {
 
@@ -27,40 +30,74 @@ public class PlayerLoginPack extends NetPack {
         super(data);
         this.userName = PackageUtils.readString(data);
         this.password = PackageUtils.readString(data);
+        this.client = PackageUtils.readString(data);
+    }
+
+    @Override
+    public int getId() {
+        return -1;
     }
 
     @Override
     public void write(ByteBuf data) {
         PackageUtils.writeString(this.userName, data);
         PackageUtils.writeString(this.password, data);
+        PackageUtils.writeString(this.client, data);
     }
 
     @Override
-    public void action(Engine engine, Entity entity) {
+    public void action(Engine engine, Entity channelEntity) {
+        ChannelComponent channelComponent = Mappers.channelCM.get(channelEntity);
+
+        if(isAlreadyLogin(engine)){
+            System.out.println("已经登录了,不能再登录");
+            return;
+        }
+
+        Entity entity = E.create().with(MessageComponent.class, e->{
+            e.channelId = channelComponent.channel.id();
+        }).buildToWorld();
+
+
         UserDto userDto = UserManager.loadUser(this.userName);
 
         //send all existing player to player
         engine.getEntitiesFor(Family.all(PlayerDataComponent.class).get()).forEach(e->{
             PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
             if(StringUtils.equals(p1.mapName, userDto.getMapName())){
-                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees);
+                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees, p1.client);
                 entity.getComponent(MessageComponent.class).outboundPack(p);
             }
         });
 
-        //landing current play to others
         E.edit(entity).with(PlayerDataComponent.class, e->{
             e.setCharacter(userDto.getCharacter());
             e.setId(userDto.getId());
             e.mapName = userDto.getMapName();
             e.userName = userName;
-            e.directionInDegrees = 1;
+            e.directionInDegrees = userDto.getDirectionInDegrees();
             e.position.set(userDto.getX(), userDto.getY());
+            e.client = client;
         });
 
-        //send current player to others(include )
-        ActorLandingPack pack = new ActorLandingPack(userDto.getMapName(), userDto.getUserName(),userDto.getCharacter(), userDto.getId(), userDto.getX(),userDto.getY(),userDto.getDirectionInDegrees());
+        //send current player to others
+        ActorLandingPack pack = new ActorLandingPack(userDto.getMapName(), userDto.getUserName(),userDto.getCharacter(), userDto.getId(), userDto.getX(),userDto.getY(),userDto.getDirectionInDegrees(), client);
         engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMap(pack, userDto.getMapName());
+
+        //send current player current player
+        entity.getComponent(MessageComponent.class).outboundPack(pack);
+    }
+
+    private static final Family playerDataComponentFamily = Family.all(PlayerDataComponent.class).get();
+
+    private boolean isAlreadyLogin(Engine engine){
+        for (Entity next : engine.getEntitiesFor(playerDataComponentFamily)) {
+            PlayerDataComponent messageComponent = Mappers.playerCM.get(next);
+            if (StringUtils.equals(messageComponent.userName,userName)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getUserName() {

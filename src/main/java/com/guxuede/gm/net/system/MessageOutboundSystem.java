@@ -1,6 +1,7 @@
 package com.guxuede.gm.net.system;
 
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.ashley.core.EntitySystem;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.guxuede.gm.net.client.registry.NetPack;
@@ -15,29 +16,10 @@ import org.apache.commons.lang3.StringUtils;
 /**
  * Created by guxuede on 2017/6/3 .
  */
-public class MessageOutboundSystem extends IteratingSystem {
+public class MessageOutboundSystem extends EntitySystem {
 
-    private static final Family family = Family.all(MessageComponent.class, ChannelComponent.class).get();
+    private static final Family family = Family.all(MessageComponent.class).get();
 
-    private static final Family playerFamily = Family.all(MessageComponent.class, ChannelComponent.class, PlayerDataComponent.class).get();
-
-    public MessageOutboundSystem(){
-        super(family);
-    }
-
-    @Override
-    protected void processEntity(Entity entity, float deltaTime) {
-        //process outbound message
-        MessageComponent messageComponent = Mappers.messageCM.get(entity);
-        ChannelComponent channelComponent = Mappers.channelCM.get(entity);
-        if(channelComponent!=null){
-            Channel channel = channelComponent.channel;
-            messageComponent.outboundNetPacks.consumerAll(channel::write);
-            channel.flush();
-        }else{
-            messageComponent.outboundNetPacks.clear();
-        }
-    }
 
     public void broadCaseMessage(NetPack netPack){
         getEngine().getEntitiesFor(family).forEach(e->{

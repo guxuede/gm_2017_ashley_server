@@ -6,12 +6,16 @@ import io.netty.buffer.ByteBuf;
 
 public abstract class NetPack {
 
+
+
     public NetPack(){
 
     }
 
     public NetPack(ByteBuf data) {
     }
+
+    public abstract int getId();
 
     public void write(ByteBuf data){
 

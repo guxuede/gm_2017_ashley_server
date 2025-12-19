@@ -18,6 +18,7 @@ public class PlayerDataComponent implements Component, Pool.Poolable{
     public float directionInDegrees = 0;
     public boolean isMoving;
 
+    public String client;
 
     public String getCharacter() {
         return character;

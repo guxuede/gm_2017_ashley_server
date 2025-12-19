@@ -18,6 +18,7 @@ public class GameWorld implements Runnable {
     private long last = System.currentTimeMillis();
 
     public GameWorld(){
+        ENTITY_ENGINE.addSystem(new ChannelSystem());
         ENTITY_ENGINE.addSystem(new MessageInboundSystem());
         ENTITY_ENGINE.addSystem(new MessageOutboundSystem());
         ENTITY_ENGINE.addSystem(new CommandSystem(ENTITY_ENGINE));
