@@ -14,9 +14,10 @@ import com.guxuede.gm.net.utils.PackageUtils;
 import entityEdit.E;
 import entityEdit.Mappers;
 import io.netty.buffer.ByteBuf;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-
+@Slf4j
 public class PlayerLoginPack extends NetPack {
     private String userName;
     private String password;
@@ -50,7 +51,7 @@ public class PlayerLoginPack extends NetPack {
         ChannelComponent channelComponent = Mappers.channelCM.get(channelEntity);
 
         if(isAlreadyLogin(engine)){
-            System.out.println("已经登录了,不能再登录");
+            log.error("已经登录了,不能再登录");
             return;
         }
 

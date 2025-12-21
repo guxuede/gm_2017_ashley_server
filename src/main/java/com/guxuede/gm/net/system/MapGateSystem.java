@@ -10,8 +10,12 @@ import com.guxuede.gm.net.system.component.MessageComponent;
 import com.guxuede.gm.net.system.component.PlayerDataComponent;
 import entityEdit.Mappers;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MapGateSystem  extends IteratingSystem {
+
+    private static final Logger logger = LoggerFactory.getLogger(MapGateSystem.class);
 
     private static final Family family = Family.all(PlayerDataComponent.class).get();
 
@@ -23,6 +27,10 @@ public class MapGateSystem  extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         //process inbound entity message
         PlayerDataComponent playerDataComponent = Mappers.playerCM.get(entity);
+        if(!playerDataComponent.userName.equals(playerDataComponent.client)){
+            //只处理主控角色
+            return;
+        }
         if(StringUtils.equals("data/desert1.tmx", playerDataComponent.mapName)){
             if(playerDataComponent.position.dst(787f,451f) <  20){
                 actorMapChange(entity, playerDataComponent,  "data/map2.tmx", 110, 83);
@@ -44,6 +52,7 @@ public class MapGateSystem  extends IteratingSystem {
         playerDataComponent.mapName =toMap;
         playerDataComponent.position.set(x, y);
 
+        logger.info("actorMapChange from " + originalMap + " to " + toMap);
         MessageComponent messageComponent = Mappers.messageCM.get(entity);
         ChannelComponent channelComponent = messageComponent.channelComponent;
 
@@ -54,14 +63,14 @@ public class MapGateSystem  extends IteratingSystem {
         getEngine().getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMapExcept(actorUnLandingPack, messageComponent.channelComponent, originalMap);
 
         //notify other player(include current player) in new map: landing player
-        ActorLandingPack pack = new ActorLandingPack(playerDataComponent.mapName, playerDataComponent.userName,playerDataComponent.getCharacter(), playerDataComponent.id, playerDataComponent.position.x,playerDataComponent.position.y,playerDataComponent.directionInDegrees, null);
+        ActorLandingPack pack = new ActorLandingPack(playerDataComponent.mapName, playerDataComponent.userName,playerDataComponent.getCharacter(), playerDataComponent.id, playerDataComponent.position.x, playerDataComponent.position.y,playerDataComponent.directionInDegrees, playerDataComponent.client);
         getEngine().getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMap(pack, playerDataComponent.mapName);
 
         //send existing player in new map to current player
         getEngine().getEntitiesFor(Family.all(PlayerDataComponent.class).get()).forEach(e->{
-            PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
+            PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);//other actor
             if(p1.id!=playerDataComponent.id && StringUtils.equals(p1.mapName, playerDataComponent.mapName)){
-                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees, null);
+                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees, p1.client);
                 channelComponent.outboundPack(p);
             }
         });

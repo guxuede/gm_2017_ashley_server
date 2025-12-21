@@ -2,6 +2,7 @@ package com.guxuede.gm.net.system;
 
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.EntitySystem;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -12,6 +13,7 @@ import picocli.CommandLine;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+@Slf4j
 public class CommandSystem extends EntitySystem {
 
     private static Engine engine;
@@ -49,7 +51,7 @@ public class CommandSystem extends EntitySystem {
                         }
                     }
                     // Print the result
-                    System.out.println("You entered: " + line);
+                    log.error("You entered: {}" , line);
                 }
             }
         }).start();
@@ -86,7 +88,7 @@ public class CommandSystem extends EntitySystem {
 
         @Override
         public void run() {
-            System.out.println("hi");
+            log.error("hi");
         }
     }
 

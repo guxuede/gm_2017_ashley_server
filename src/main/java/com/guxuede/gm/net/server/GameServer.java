@@ -16,9 +16,13 @@
 package com.guxuede.gm.net.server;
 
 import com.guxuede.gm.net.client.registry.PacketRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class GameServer {
+    private static final Logger logger = LoggerFactory.getLogger(GameServer.class);
+
     public static final int PORT = Integer.parseInt(System.getProperty("port", "8992"));
 
     public static void main(String[] args) throws Exception {

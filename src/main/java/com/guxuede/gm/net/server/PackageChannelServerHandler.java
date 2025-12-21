@@ -29,6 +29,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.UnknownHostException;
 
@@ -36,12 +37,13 @@ import java.net.UnknownHostException;
 /**
  * Handles a server-side channel.
  */
+@Slf4j
 public class PackageChannelServerHandler extends SimpleChannelInboundHandler<NetPack> {
     private static final AttributeKey<Entity> GAME_ENTITY = AttributeKey.valueOf("GAME_ENTITY");
 
     @Override
     public void channelActive(final ChannelHandlerContext ctx) throws UnknownHostException {
-        System.out.println("channelActive");
+        log.info("channelActive");
         Channel channel = ctx.channel();
         Entity entity = E.create().with(ChannelComponent.class, e->{
             e.channel = channel;
@@ -51,7 +53,7 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
 
     @Override
     public void channelRead0(ChannelHandlerContext ctx, NetPack msg) throws Exception {
-        System.out.println("received message:"  + msg);
+        log.info("received message:"  + msg);
         Entity entity = ctx.attr(GAME_ENTITY).get();
         Mappers.channelCM.get(entity).inBoundPack(msg);
     }
@@ -59,7 +61,7 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        System.out.println("channelInactive = [" + ctx + "]");
+        log.info("channelInactive = [" + ctx + "]");
         Entity entity = ctx.attr(GAME_ENTITY).get();
         ctx.attr(GAME_ENTITY).set(null);
 
@@ -72,7 +74,7 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
 
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("handlerRemoved = [" + ctx + "]");
+        log.error("handlerRemoved = [" + ctx + "]");
         ctx.attr(GAME_ENTITY).set(null);
     }
 
@@ -82,11 +84,11 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
         if (IdleStateEvent.class.isAssignableFrom(evt.getClass())) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE)
-                System.out.println("read idle");
+                log.info("read idle");
             else if (event.state() == IdleState.WRITER_IDLE)
-                System.out.println("write idle");
+                log.info("write idle");
             else if (event.state() == IdleState.ALL_IDLE)
-                System.out.println("all idle");
+                log.info("all idle");
         }
     }
 
@@ -94,6 +96,7 @@ public class PackageChannelServerHandler extends SimpleChannelInboundHandler<Net
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        log.error("exceptionCaught = [" + cause + "]");
         cause.printStackTrace();
         ctx.close();
     }
