@@ -62,15 +62,17 @@ public class PlayerLoginPack extends NetPack {
 
         UserDto userDto = UserManager.loadUser(this.userName);
 
-        //send all existing actor to player
-        engine.getEntitiesFor(Family.all(PlayerDataComponent.class).get()).forEach(e->{
-            PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
-            MessageComponent p2 = e.getComponent(MessageComponent.class);
-            if(p2.channelComponent != channelComponent && StringUtils.equals(p1.mapName, userDto.getMapName())){
-                ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees, p1.client);
-                channelComponent.outboundPack(p);
-            }
-        });
+        //send all existing actor to current player
+        if(this.userName.equals(this.client)){//只有是主角色登录时才通知
+            engine.getEntitiesFor(Family.all(PlayerDataComponent.class).get()).forEach(e->{
+                PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
+                MessageComponent p2 = e.getComponent(MessageComponent.class);
+                if(p2.channelComponent != channelComponent && StringUtils.equals(p1.mapName, userDto.getMapName())){
+                    ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees, p1.client);
+                    channelComponent.outboundPack(p);
+                }
+            });
+        }
 
         E.edit(entity).with(PlayerDataComponent.class, e->{
             e.setCharacter(userDto.getCharacter());

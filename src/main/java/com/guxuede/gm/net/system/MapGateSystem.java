@@ -27,7 +27,7 @@ public class MapGateSystem  extends IteratingSystem {
     protected void processEntity(Entity entity, float deltaTime) {
         //process inbound entity message
         PlayerDataComponent playerDataComponent = Mappers.playerCM.get(entity);
-        if(!playerDataComponent.userName.equals(playerDataComponent.client)){
+        if(!playerDataComponent.isMainActor()){
             //只处理主控角色
             return;
         }
@@ -52,11 +52,9 @@ public class MapGateSystem  extends IteratingSystem {
         playerDataComponent.mapName =toMap;
         playerDataComponent.position.set(x, y);
 
-        logger.info("actorMapChange from " + originalMap + " to " + toMap);
+        logger.info("actorMapChange from {} to {}", originalMap, toMap);
         MessageComponent messageComponent = Mappers.messageCM.get(entity);
         ChannelComponent channelComponent = messageComponent.channelComponent;
-
-
 
         //notify other player in same map: un-landing player
         ActorUnLandingPack actorUnLandingPack = new ActorUnLandingPack(playerDataComponent.id);

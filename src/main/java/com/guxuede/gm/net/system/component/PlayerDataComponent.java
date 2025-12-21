@@ -40,4 +40,8 @@ public class PlayerDataComponent implements Component, Pool.Poolable{
     public void reset() {
 
     }
+
+    public boolean isMainActor(){
+        return userName.equals(client);
+    }
 }
