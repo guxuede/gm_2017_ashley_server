@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.guxuede.gm.net.client.registry.pack.ActorLandingPack;
 import com.guxuede.gm.net.client.registry.pack.ActorUnLandingPack;
+import com.guxuede.gm.net.system.component.ChannelComponent;
 import com.guxuede.gm.net.system.component.MessageComponent;
 import com.guxuede.gm.net.system.component.PlayerDataComponent;
 import entityEdit.Mappers;
@@ -43,9 +44,14 @@ public class MapGateSystem  extends IteratingSystem {
         playerDataComponent.mapName =toMap;
         playerDataComponent.position.set(x, y);
 
+        MessageComponent messageComponent = Mappers.messageCM.get(entity);
+        ChannelComponent channelComponent = messageComponent.channelComponent;
+
+
+
         //notify other player in same map: un-landing player
         ActorUnLandingPack actorUnLandingPack = new ActorUnLandingPack(playerDataComponent.id);
-        getEngine().getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMapExcept(actorUnLandingPack, entity, originalMap);
+        getEngine().getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMapExcept(actorUnLandingPack, messageComponent.channelComponent, originalMap);
 
         //notify other player(include current player) in new map: landing player
         ActorLandingPack pack = new ActorLandingPack(playerDataComponent.mapName, playerDataComponent.userName,playerDataComponent.getCharacter(), playerDataComponent.id, playerDataComponent.position.x,playerDataComponent.position.y,playerDataComponent.directionInDegrees, null);
@@ -56,7 +62,7 @@ public class MapGateSystem  extends IteratingSystem {
             PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
             if(p1.id!=playerDataComponent.id && StringUtils.equals(p1.mapName, playerDataComponent.mapName)){
                 ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees, null);
-                entity.getComponent(MessageComponent.class).outboundPack(p);
+                channelComponent.outboundPack(p);
             }
         });
     }

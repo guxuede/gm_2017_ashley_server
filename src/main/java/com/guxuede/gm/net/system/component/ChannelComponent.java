@@ -11,15 +11,20 @@ public class ChannelComponent implements Component, Pool.Poolable{
     public Channel channel;
 
     public PackQueue<NetPack> inboundNetPacks = new PackQueue<>();
+    public PackQueue<NetPack> outboundNetPacks = new PackQueue<>();
 
     public synchronized void inBoundPack(NetPack netPack){
         inboundNetPacks.add(netPack);
     }
 
+    public synchronized void outboundPack(NetPack netPack){
+        outboundNetPacks.add(netPack);
+    }
 
     @Override
     public void reset() {
         inboundNetPacks.clear();
+        outboundNetPacks.clear();
         if(channel!=null){
             try{
                 if(!channel.isOpen()){

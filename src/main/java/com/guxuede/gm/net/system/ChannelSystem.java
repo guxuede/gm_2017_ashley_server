@@ -28,18 +28,12 @@ public class ChannelSystem extends IteratingSystem {
 
         if(channel.isOpen()){
             //send message
-            for (Entity next : getEngine().getEntitiesFor(family2)) {
-                MessageComponent messageComponent = Mappers.messageCM.get(next);
-                if (messageComponent.channelId.equals(channel.id())) {
-                    messageComponent.outboundNetPacks.consumerAll(channel::write);
-                    channel.flush();
-                }
-            }
+            channelComponent.outboundNetPacks.consumerAll(channel::write);
+            channel.flush();
         }else{
             //process channel close
-            processChannelClose(channel);
+            processChannelClose(channelComponent);
             getEngine().removeEntity(entity);
-
         }
 
         //process inbound message
@@ -47,19 +41,16 @@ public class ChannelSystem extends IteratingSystem {
             if(p.getId() == -1){
                 p.action(getEngine(),entity);
             }else {
-                processPlayerMessage(p, channel);
+                processPlayerMessage(p, channelComponent);
             }
         });
-
-
-
     }
 
-    private void processPlayerMessage(NetPack p, Channel channel) {
+    private void processPlayerMessage(NetPack p,ChannelComponent channelComponent) {
         for (Entity next : getEngine().getEntitiesFor(family1)) {
             MessageComponent messageComponent = Mappers.messageCM.get(next);
             PlayerDataComponent playerDataComponent = Mappers.playerCM.get(next);
-            if (messageComponent.channelId.equals(channel.id()) && playerDataComponent.id == p.getId()) {
+            if (messageComponent.channelComponent == channelComponent && playerDataComponent.id == p.getId()) {
                 messageComponent.inBoundPack(p);
                 break;
             }
@@ -67,11 +58,11 @@ public class ChannelSystem extends IteratingSystem {
     }
 
 
-    private void processChannelClose(Channel channel) {
+    private void processChannelClose(ChannelComponent channelComponent) {
         for (Entity next : getEngine().getEntitiesFor(family1)) {
             MessageComponent messageComponent = Mappers.messageCM.get(next);
             PlayerDataComponent playerDataComponent = Mappers.playerCM.get(next);
-            if (messageComponent.channelId.equals(channel.id())) {
+            if (messageComponent.channelComponent == channelComponent) {
                 PlayerDisconnectedPack playerDisconnectedPack = new PlayerDisconnectedPack(playerDataComponent.getId());
                 messageComponent.inBoundPack(playerDisconnectedPack);
             }

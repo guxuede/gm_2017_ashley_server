@@ -8,21 +8,15 @@ import io.netty.channel.ChannelId;
 
 public class MessageComponent implements Component, Pool.Poolable{
 
-    public ChannelId channelId;
+    public ChannelComponent channelComponent;
     public PackQueue<NetPack> inboundNetPacks = new PackQueue<>();
-    public PackQueue<NetPack> outboundNetPacks = new PackQueue<>();
 
     public synchronized void inBoundPack(NetPack netPack){
         inboundNetPacks.add(netPack);
     }
 
-    public synchronized void outboundPack(NetPack netPack){
-        outboundNetPacks.add(netPack);
-    }
-
     @Override
     public void reset() {
         inboundNetPacks.clear();
-        outboundNetPacks.clear();
     }
 }

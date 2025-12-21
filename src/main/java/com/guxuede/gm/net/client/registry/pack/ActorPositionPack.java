@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 
 import com.guxuede.gm.net.client.registry.NetPack;
 import com.guxuede.gm.net.system.MessageOutboundSystem;
+import com.guxuede.gm.net.system.component.MessageComponent;
 import com.guxuede.gm.net.system.component.PlayerDataComponent;
 import entityEdit.Mappers;
 import io.netty.buffer.ByteBuf;
@@ -51,7 +52,9 @@ public class ActorPositionPack extends NetPack {
         playerDataComponent.acceleration.set(acceleration);
         playerDataComponent.directionInDegrees = directionInDegrees;
 
-        engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMapExcept(this, entity, playerDataComponent.mapName);
+        MessageComponent messageComponent = Mappers.messageCM.get(entity);
+
+        engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMapExcept(this, messageComponent.channelComponent, playerDataComponent.mapName);
     }
 
 

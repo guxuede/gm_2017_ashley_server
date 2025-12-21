@@ -55,18 +55,19 @@ public class PlayerLoginPack extends NetPack {
         }
 
         Entity entity = E.create().with(MessageComponent.class, e->{
-            e.channelId = channelComponent.channel.id();
+            e.channelComponent = channelComponent;
         }).buildToWorld();
 
 
         UserDto userDto = UserManager.loadUser(this.userName);
 
-        //send all existing player to player
+        //send all existing actor to player
         engine.getEntitiesFor(Family.all(PlayerDataComponent.class).get()).forEach(e->{
             PlayerDataComponent p1 = e.getComponent(PlayerDataComponent.class);
-            if(StringUtils.equals(p1.mapName, userDto.getMapName())){
+            MessageComponent p2 = e.getComponent(MessageComponent.class);
+            if(p2.channelComponent != channelComponent && StringUtils.equals(p1.mapName, userDto.getMapName())){
                 ActorLandingPack p = new ActorLandingPack(p1.mapName, p1.userName,p1.character, p1.id, p1.position.x, p1.position.y,p1.directionInDegrees, p1.client);
-                entity.getComponent(MessageComponent.class).outboundPack(p);
+                channelComponent.outboundPack(p);
             }
         });
 
@@ -80,12 +81,12 @@ public class PlayerLoginPack extends NetPack {
             e.client = client;
         });
 
-        //send current player to others
+        //send current player to others(include current player)
         ActorLandingPack pack = new ActorLandingPack(userDto.getMapName(), userDto.getUserName(),userDto.getCharacter(), userDto.getId(), userDto.getX(),userDto.getY(),userDto.getDirectionInDegrees(), client);
-        engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMap(pack, userDto.getMapName());
+        engine.getSystem(MessageOutboundSystem.class).broadCaseMessageInSameMapExcept(pack, channelComponent, userDto.getMapName());
 
         //send current player current player
-        entity.getComponent(MessageComponent.class).outboundPack(pack);
+        channelComponent.outboundPack(pack);
     }
 
     private static final Family playerDataComponentFamily = Family.all(PlayerDataComponent.class).get();
