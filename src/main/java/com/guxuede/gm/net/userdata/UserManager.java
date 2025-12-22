@@ -28,7 +28,13 @@ public class UserManager {
             "LpcActor1",
             "LpcActor2",
             "LpcActor3",
-            "LpcActor4"
+            "LpcActor4",
+            "LpcActor5",
+            "LpcActor6",
+            "LpcActor7",
+            "LpcActor8",
+            "LpcActor9",
+            "LpcActor10"
     };
 
     private static final Random random = new Random();

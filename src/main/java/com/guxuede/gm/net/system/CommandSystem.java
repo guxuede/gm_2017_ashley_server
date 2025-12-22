@@ -51,7 +51,7 @@ public class CommandSystem extends EntitySystem {
                         }
                     }
                     // Print the result
-                    log.error("You entered: {}" , line);
+                    log.info("You entered: {}" , line);
                 }
             }
         }).start();
@@ -88,7 +88,7 @@ public class CommandSystem extends EntitySystem {
 
         @Override
         public void run() {
-            log.error("hi");
+            log.info("hi");
         }
     }
 

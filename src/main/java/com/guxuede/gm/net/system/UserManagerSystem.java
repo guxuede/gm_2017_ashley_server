@@ -17,7 +17,7 @@ public class UserManagerSystem extends IntervalSystem {
 
     @Override
     protected void updateInterval() {
-        log.error("save user");
+        log.info("save user");
         getEngine().getEntitiesFor(family).forEach(e->{
             PlayerDataComponent component = e.getComponent(PlayerDataComponent.class);
             UserManager.updateUser(component);
